@@ -1,0 +1,45 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            lazy: true
+            provider: app_user_provider
+            custom_authenticators:
+                - App\Security\AppAuthenticator
+            entry_point: App\Security\AppAuthenticator
+            form_login:
+                login_path: app_login
+                check_path: app_login
+            logout:
+                path: app_logout
+                target: app_login
+
+    access_control:
+        # 🔒 La section admin est réservée aux administrateurs
+        - { path: ^/admin, roles: ROLE_ADMIN }
+
+        # 🔒 Les instructeurs peuvent gérer leurs ateliers
+        - { path: ^/atelier/new, roles: ROLE_INSTRUCTEUR }
+        - { path: ^/atelier/\d+/edit, roles: ROLE_INSTRUCTEUR }
+        - { path: ^/atelier/\d+/delete, roles: ROLE_INSTRUCTEUR }
+        - { path: ^/atelier/\d+/liste_inscrits, roles: ROLE_INSTRUCTEUR }
+
+        # 🔒 Seuls les apprentis peuvent s'inscrire/désinscrire aux ateliers
+        - { path: ^/atelier/\d+/inscription, roles: ROLE_APPRENTI }
+        - { path: ^/atelier/\d+/desinscription, roles: ROLE_APPRENTI }
+        - { path: ^/mesinscriptions, roles: ROLE_APPRENTI }
+
+        # 🔒 Seuls les apprentis peuvent noter les ateliers
+        - { path: ^/atelier/\d+/noter, roles: ROLE_APPRENTI }

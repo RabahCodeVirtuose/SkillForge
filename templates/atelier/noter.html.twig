@@ -1,0 +1,147 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Noter l'atelier - {{ atelier.nom }} {% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="card p-4 shadow-lg rounded-4 glass-effect" style="max-width: 500px;">
+            <div class="card-body text-center">
+                <h1 class="h3 mb-3 text-white">
+                    <i class="bi bi-star-fill text-warning"></i> Noter l'atelier
+                </h1>
+
+                <h4 class="text-info">{{ atelier.nom }}</h4>
+
+                <!-- Messages Flash -->
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                        <i class="bi bi-check-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                        <i class="bi bi-exclamation-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+
+                <!-- Formulaire de notation -->
+                {{ form_start(form) }}
+
+                <div class="mb-3 text-start">
+                    <label class="form-label text-white">
+                        <i class="bi bi-pencil-fill me-2"></i> Votre note (0 à 5)
+                    </label>
+                    <div class="rating-container">
+                        {{ form_widget(form.note, {'attr': {'class': 'form-check-inline'}}) }}
+                    </div>
+                </div>
+
+
+
+                {{ form_end(form) }}
+
+                <!-- Bouton de retour -->
+                <p class="mt-4">
+                    <a href="{{ path('app_atelier_show', {'id': atelier.id}) }}" class="btn btn-secondary btn-lg rounded-pill shadow-sm">
+                        <i class="bi bi-arrow-left me-2"></i> Retour à l'atelier
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 🌌 Arrière-plan futuriste */
+        body {
+            background: linear-gradient(to right, #430C05, #00353F);
+            font-family: 'Poppins', sans-serif;
+            color: #FFBF66;
+        }
+
+        /* ✨ Effet Glassmorphism */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 🎨 Boutons stylisés */
+        .btn-primary {
+            background: #D46F4D;
+            border: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background: #08C5D1;
+            transform: scale(1.05);
+            box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: #FFBF66;
+            border: none;
+            color: #430C05;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-secondary:hover {
+            background: #08C5D1;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* 🖋 Champs de formulaire modernisés */
+        .form-control {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* 🎯 Amélioration des radios */
+        .rating-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .form-check-inline {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 20px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .form-check-inline:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* 🎭 Animations d'apparition */
+        .glass-effect {
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+{% endblock %}

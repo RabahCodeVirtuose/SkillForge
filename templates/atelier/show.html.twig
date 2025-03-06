@@ -1,0 +1,207 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Atelier - {{ atelier.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-2" style="width: 60%">
+        <div class="text-center">
+            <h1 class="text-uppercase fw-bold text-warning">
+                <i class="bi bi-bookmark-star-fill me-2"></i>{{ atelier.nom }}
+            </h1>
+        </div>
+
+        <!-- Messages flash -->
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                <i class="bi bi-check-circle me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                <i class="bi bi-exclamation-circle me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+
+        <div class="card shadow-lg p-4 mt-4 glass-effect">
+            <div class="card-body">
+                <h5 class="card-title text-info fw-bold">Détails de l'atelier</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-transparent text-white">
+                        <strong><i class="bi bi-hash me-2"></i>ID:</strong> {{ atelier.id }}
+                    </li>
+                    <li class="list-group-item bg-transparent text-white">
+                        <strong><i class="bi bi-card-text me-2"></i>Description:</strong> {{ atelier.description | raw }}
+                    </li>
+                    <li class="list-group-item bg-transparent text-white">
+                        <strong><i class="bi bi-person me-2"></i>Instructeur:</strong>
+                        {{ atelier.instructeur.nom }} ({{ atelier.instructeur.email }})
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Affichage de la moyenne des notes -->
+        <div class="mt-4">
+            {% if moyenne_notes > 0 %}
+                <div class="alert alert-info text-center shadow-sm">
+                    <i class="bi bi-star-fill text-warning"></i> Note moyenne : <strong>{{ moyenne_notes }}</strong>/5
+                </div>
+            {% else %}
+                <p class="text-muted text-center">Cet atelier n'a pas encore reçu de notes.</p>
+            {% endif %}
+        </div>
+
+        <!-- Affichage du graphique des notes -->
+        {% if notes_data is not empty %}
+            <div class="card mt-3 shadow-lg glass-effect">
+                <div class="card-body">
+                    <h5 class="card-title text-info fw-bold">Répartition des notes</h5>
+                    <canvas id="chartNotes"></canvas>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Liste des apprentis inscrits (visible uniquement pour les instructeurs) -->
+        {% if app.user and 'ROLE_INSTRUCTEUR' in app.user.roles %}
+            <div class="card mt-3 shadow-lg glass-effect">
+                <div class="card-body">
+                    <h5 class="card-title text-info fw-bold">Apprentis inscrits</h5>
+                    {% if atelier.inscrits is not empty %}
+                        <ul class="list-group list-group-flush">
+                            {% for apprenti in atelier.inscrits %}
+                                <li class="list-group-item bg-transparent text-white">
+                                    <i class="bi bi-person-circle me-2"></i> {{ apprenti.nom }} ({{ apprenti.email }})
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Aucun apprenti inscrit pour le moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="mt-4 text-center">
+            {% if app.user and 'ROLE_APPRENTI' in app.user.roles %}
+                {% if app.user in atelier.inscrits %}
+                    <form action="{{ path('app_atelier_desinscription', {'id': atelier.id}) }}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-lg rounded-pill shadow-sm">
+                            <i class="bi bi-x-circle me-2"></i> Se désinscrire
+                        </button>
+                    </form>
+                {% else %}
+                    <form action="{{ path('app_atelier_inscription', {'id': atelier.id}) }}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-sm">
+                            <i class="bi bi-check-circle me-2"></i> S'inscrire
+                        </button>
+                    </form>
+                {% endif %}
+
+                <a href="{{ path('app_atelier_noter', {'id': atelier.id}) }}" class="btn btn-warning btn-lg rounded-pill shadow-sm ms-2">
+                    <i class="bi bi-pencil-square"></i> Noter cet atelier
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="{{ path('app_atelier_index') }}" class="btn btn-secondary btn-lg rounded-pill shadow-sm">
+                <i class="bi bi-arrow-left me-2"></i> Retour à la liste
+            </a>
+        </div>
+
+        {% if app.user and app.user == atelier.instructeur %}
+            <div class="mt-3 text-center">
+                <a href="{{ path('app_atelier_edit', {'id': atelier.id}) }}" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                    <i class="bi bi-pencil-square me-2"></i> Modifier
+                </a>
+                <br>
+                {{ include('atelier/_delete_form.html.twig') }}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Ajout d'un conteneur avec une taille fixe -->
+    <div style="width: 700px; height:50vh; margin: auto;">
+        <canvas id="chartNotes"></canvas>
+    </div>
+
+    <!-- Script Chart.js pour afficher les notes -->
+    {% if notes_data is not empty %}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            var ctx = document.getElementById('chartNotes').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['0', '1', '2', '3', '4', '5'],
+                    datasets: [{
+                        label: 'Nombre de votes',
+                        data: {{ notes_data|json_encode|raw }},
+                        backgroundColor: 'rgba(8, 197, 209, 0.6)',
+                        borderColor: 'rgba(8, 197, 209, 1)',
+                        borderWidth: 2,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,  // Désactiver la réactivité automatique
+                    maintainAspectRatio: true, // Désactiver l'ajustement automatique de l'aspect ratio
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: 'white',
+                                font: { size: 14 }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.2)' }
+                        },
+                        y: {
+                            ticks: {
+                                color: 'white',
+                                font: { size: 14 }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.2)' }
+                        }
+                    }
+                }
+            });
+        </script>
+    {% endif %}
+
+
+
+    <style>
+        body {
+            background: linear-gradient(to right, #430C05, #00353F);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+{% endblock %}

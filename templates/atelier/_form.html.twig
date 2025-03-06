@@ -1,0 +1,30 @@
+{{ form_start(form) }}
+<div class="mb-3">
+    {{ form_widget(form) }}
+</div>
+<div class="d-grid">
+    <button class="btn btn-primary btn-lg rounded-pill shadow-sm">
+        <i class="bi bi-save me-2"></i> {{ button_label|default('Enregistrer') }}
+    </button>
+</div>
+{{ form_end(form) }}
+
+<!-- 🌟 Styles améliorés -->
+<style>
+    /* 🎭 Effet Glassmorphism */
+
+
+    /* 🎨 Bouton stylisé */
+    .btn-primary {
+        background: #FFBF66;
+        color: #00353F;
+        font-weight: bold;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-primary:hover {
+        background: #D46F4D;
+        color: white;
+        transform: scale(1.05);
+    }
+</style>

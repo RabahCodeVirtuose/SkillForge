@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="card p-4 shadow-lg rounded-4" style="max-width: 500px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 2px solid rgba(255, 255, 255, 0.2);">
+            <div class="card-body">
+                <h1 class="h3 mb-3 text-center text-white">
+                    <i class="bi bi-person-plus-fill me-2"></i>Créer un compte
+                </h1>
+
+                <!-- Messages Flash -->
+                {% for label, messages in app.flashes %}
+                    <div class="alert alert-{{ label }} text-center">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <!-- Formulaire -->
+                {{ form_start(form) }}
+
+                <div class="mb-3">
+                    <label class="form-label text-white"><i class="bi bi-envelope-fill me-2"></i>Email</label>
+                    {{ form_widget(form.email, {'attr': {'class': 'form-control rounded-pill border-0 shadow-sm'}}) }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-white"><i class="bi bi-person-fill me-2"></i>Nom</label>
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control rounded-pill border-0 shadow-sm'}}) }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-white"><i class="bi bi-person-fill me-2"></i>Prénom</label>
+                    {{ form_widget(form.prenom, {'attr': {'class': 'form-control rounded-pill border-0 shadow-sm'}}) }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-white"><i class="bi bi-lock-fill me-2"></i>Mot de passe</label>
+                    {{ form_widget(form.password.first, {'attr': {'class': 'form-control rounded-pill border-0 shadow-sm'}}) }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-white"><i class="bi bi-lock-fill me-2"></i>Confirmer le mot de passe</label>
+                    {{ form_widget(form.password.second, {'attr': {'class': 'form-control rounded-pill border-0 shadow-sm'}}) }}
+                </div>
+
+
+
+
+                {{ form_end(form) }}
+
+                <!-- Lien vers la connexion -->
+                <p class="mt-3 text-center text-white">
+                    Vous avez déjà un compte ? <a href="{{ path('app_login') }}" class="text-warning text-decoration-none">Connectez-vous</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Appliquer la palette de couleurs */
+        body {
+            background: linear-gradient(to right, #430C05, #00353F);
+            color: #FFBF66;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Boutons stylisés */
+        .btn-primary {
+            background: #D46F4D;
+            border: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+
+        /* Champs de formulaire modernisés */
+        .form-control {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Liens stylisés */
+        a.text-warning:hover {
+            color: #08C5D1 !important;
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}

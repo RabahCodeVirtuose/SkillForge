@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <div class="card custom-card shadow-lg p-4">
+            <div class="card-body text-center">
+                <h1 class="h3 fw-bold mb-4 text-primary">
+                    <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                </h1>
+
+                <!-- Message d'erreur -->
+                {% if error %}
+                    <div class="alert alert-danger text-danger fw-bold">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+
+                <!-- Utilisateur déjà connecté -->
+                {% if app.user %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-person-check"></i> Vous êtes connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>.
+                        <a href="{{ path('app_logout') }}" class="btn btn-danger btn-sm mt-2 custom-btn">
+                            <i class="bi bi-box-arrow-right"></i> Se déconnecter
+                        </a>
+                    </div>
+                {% else %}
+                    <!-- Formulaire de connexion -->
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="inputEmail" class="form-label text-dark">
+                                <i class="bi bi-envelope-fill"></i> Email
+                            </label>
+                            <input type="email" value="{{ last_username }}" name="email" id="inputEmail"
+                                   class="form-control rounded-pill shadow-sm" autocomplete="email" required autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputPassword" class="form-label text-dark">
+                                <i class="bi bi-lock-fill"></i> Mot de passe
+                            </label>
+                            <input type="password" name="password" id="inputPassword"
+                                   class="form-control rounded-pill shadow-sm" autocomplete="current-password" required>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <button class="btn custom-btn w-100 rounded-pill shadow-sm" type="submit">
+                            <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                        </button>
+                    </form>
+
+                    <!-- Lien d'inscription -->
+                    <p class="mt-3 text-center">
+                        <span class="text-dark">Pas encore de compte ?</span>
+                        <a href="{{ path('registeration') }}" class="text-primary fw-bold">Créer un compte</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Styles personnalisés -->
+    <style>
+        /* 🌌 Effet futuriste */
+        body {
+            background: linear-gradient(to right, #430C05, #00353F);
+            font-family: 'Poppins', sans-serif;
+            color: #FFBF66;
+        }
+
+        /* 🎭 Carte stylisée */
+        .custom-card {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ✨ Suppression du flou au hover */
+        .custom-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 🎨 Boutons stylisés avec effet hover visible */
+        .custom-btn {
+            background: linear-gradient(to right, #D46F4D, #FFBF66);
+            border: none;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .custom-btn:hover {
+            background: linear-gradient(to right, #FFBF66, #D46F4D);
+            color: white;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+{% endblock %}

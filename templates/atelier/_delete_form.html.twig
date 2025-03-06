@@ -1,0 +1,29 @@
+<form method="post" action="{{ path('app_atelier_delete', {'id': atelier.id}) }}"
+      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet atelier ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ atelier.id) }}">
+    <button class="btn btn-danger btn-lg rounded-pill shadow-sm delete-btn">
+        <i class="bi bi-trash me-2"></i> Supprimer
+    </button>
+</form>
+
+<!-- 🌟 Styles améliorés -->
+<style>
+    /* 🎨 Bouton de suppression stylisé */
+    .delete-btn {
+        background: linear-gradient(45deg, #CE6A6B, #D46F4D);
+        border: none;
+        font-weight: bold;
+        color: white;
+        transition: all 0.3s ease-in-out;
+        padding: 12px 20px;
+        text-transform: uppercase;
+        box-shadow: 0px 5px 10px rgba(206, 106, 107, 0.3);
+    }
+
+    .delete-btn:hover {
+        background: linear-gradient(45deg, #D46F4D, #FFBF66);
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0px 8px 15px rgba(255, 191, 102, 0.4);
+    }
+</style>

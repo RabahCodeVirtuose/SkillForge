@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Ateliers{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <!-- Titre principal -->
+        <h1 class="text-center text-light fw-bold">
+            <i class="bi bi-list-task text-warning"></i> Liste des Ateliers
+        </h1>
+        <hr class="mb-4">
+
+        <!-- Grille d'affichage des ateliers -->
+        <div class="row">
+            {% for atelier in ateliers %}
+                <div class="col-md-4 col-lg-3 mb-3">
+                    <div class="card shadow-lg glass-effect h-100 p-3">
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title text-warning fw-bold text-truncate">
+                                <i class="bi bi-bookmark-fill me-2"></i>{{ atelier.nom }}
+                            </h6>
+
+                            <p class="card-text text-info small mb-1">
+                                <i class="bi bi-person-fill me-2"></i><strong>Instructeur :</strong> {{ atelier.instructeur.nom }}
+                            </p>
+
+                            <p class="card-text text-white small">
+                                <i class="bi bi-card-text me-2"></i><strong>Description :</strong>
+                                <span class="text-truncate-multiline">{{ atelier.description | striptags | slice(0, 50) ~ '...' }}</span>
+                            </p>
+
+
+                            <div class="mt-auto text-center">
+                                <a href="{{ path('app_atelier_show', {'id': atelier.id}) }}" class="btn btn-outline-info btn-sm rounded-pill shadow-sm">
+                                    <i class="bi bi-eye me-1"></i> Voir
+                                </a>
+
+                                {% if app.user and 'ROLE_INSTRUCTEUR' in app.user.roles and app.user == atelier.instructeur %}
+                                    <a href="{{ path('app_atelier_edit', {'id': atelier.id}) }}" class="btn btn-outline-warning btn-sm rounded-pill shadow-sm">
+                                        <i class="bi bi-pencil-square me-1"></i> Modifier
+                                    </a>
+                                {% endif %}
+
+                                {% if app.user and 'ROLE_APPRENTI' in app.user.roles %}
+                                    {% if app.user in atelier.inscrits %}
+                                        <form action="{{ path('app_atelier_desinscription', {'id': atelier.id}) }}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill shadow-sm">
+                                                <i class="bi bi-x-circle me-1"></i> Se désinscrire
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form action="{{ path('app_atelier_inscription', {'id': atelier.id}) }}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-success btn-sm rounded-pill shadow-sm">
+                                                <i class="bi bi-check-circle me-1"></i> S'inscrire
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12 text-center text-light">
+                    <i class="bi bi-exclamation-triangle me-2 text-warning"></i>
+                    Aucun atelier trouvé
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        /* 🌌 Arrière-plan futuriste */
+        body {
+            background: linear-gradient(to right, #430C05, #00353F);
+            font-family: 'Poppins', sans-serif;
+            color: #FFBF66;
+        }
+
+        /* ✨ Effet Glassmorphism */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.1);
+            padding: 10px;
+        }
+
+        /* 📏 Taille des cards réduite */
+        .card {
+            min-height: 180px;
+        }
+
+        /* 🎭 Animation de survol */
+        .glass-effect:hover {
+            transform: scale(1.02);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* 🎨 Boutons stylisés */
+        .btn-outline-info, .btn-outline-warning, .btn-outline-danger, .btn-outline-success {
+            transition: all 0.3s ease-in-out;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+        }
+
+        .btn-outline-info:hover {
+            background: #08C5D1;
+            color: white;
+        }
+
+        .btn-outline-warning:hover {
+            background: #D46F4D;
+            color: white;
+        }
+
+        .btn-outline-danger:hover {
+            background: #CE6A6B;
+            color: white;
+        }
+
+        .btn-outline-success:hover {
+            background: #4A919E;
+            color: white;
+        }
+        .card-text {
+            max-height: 3rem;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        /* 📌 Forcer le retour à la ligne et gérer le texte sur plusieurs lignes */
+        .text-truncate-multiline {
+            display: -webkit-box;
+            -webkit-line-clamp: 4; /* Afficher jusqu'à 4 lignes */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal !important;
+            word-wrap: break-word;
+        }
+
+        /* 📏 Ajuster la hauteur de la carte pour laisser plus de place à la description */
+        .card {
+            min-height: 260px; /* Était à 240px, on l'augmente un peu */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* 🎭 S'assurer que la description prend plus de place */
+        .card-text {
+            flex-grow: 1; /* Permet à la description d'occuper tout l'espace disponible */
+            max-height: 4.5rem; /* Augmenter un peu la hauteur */
+            overflow: hidden;
+        }
+
+
+    </style>
+{% endblock %}

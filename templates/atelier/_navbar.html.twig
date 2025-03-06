@@ -1,0 +1,121 @@
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+    <div class="container">
+        {# Logo et lien Accueil #}
+        <a class="navbar-brand text-light fw-bold" href="{{ path('app_atelier_index') }}">
+            <i class="bi-house"></i> Accueil
+        </a>
+
+        {# Bouton pour les écrans mobiles #}
+        <button class="navbar-toggler shadow-sm" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        {# Contenu de la navbar #}
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+
+                {# Bouton "Nouveau" pour créer un atelier (accessible uniquement aux instructeurs) #}
+                {% if app.user and 'ROLE_INSTRUCTEUR' in app.user.roles %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light me-2 rounded-pill shadow-sm hover-btn"
+                           href="{{ path('app_atelier_new') }}">
+                            <i class="bi-plus-circle"></i> Nouveau
+                        </a>
+                    </li>
+                {% endif %}
+
+                {# Bouton "Mes inscriptions" (visible uniquement pour les apprentis) #}
+                {% if app.user and 'ROLE_APPRENTI' in app.user.roles %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light me-2 rounded-pill shadow-sm hover-btn"
+                           href="{{ path('mes_inscriptions') }}">
+                            <i class="bi bi-journal-check"></i> Mes inscriptions
+                        </a>
+                    </li>
+                {% endif %}
+
+                {# Section utilisateur connecté #}
+                {% if app.user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light fw-bold" href="#" id="userDropdown"
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi-person-circle"></i> {{ app.user.nom }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold hover-logout"
+                                   href="{{ path('app_logout') }}">
+                                    <i class="bi-box-arrow-right"></i> Se déconnecter
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    {# Bouton "Se connecter" si l'utilisateur n'est pas connecté #}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-primary rounded-pill shadow-sm hover-login"
+                           href="{{ path('app_login') }}">
+                            <i class="bi-box-arrow-in-right"></i> Se connecter
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    /* 🌌 Effet Glassmorphism */
+    .custom-navbar {
+        background: rgba(0, 53, 63, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 10px 0;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* 📌 Liens de la navbar */
+    .navbar-nav .nav-link {
+        font-weight: bold;
+        color: #FFBF66 !important;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .navbar-nav .nav-link:hover {
+        color: #D46F4D !important;
+    }
+
+    /* ✨ Boutons stylisés */
+    .hover-btn {
+        border: 2px solid white;
+        color: white !important;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .hover-btn:hover {
+        background-color: white;
+        color: #00353F !important;
+    }
+
+    /* 🔴 Bouton de déconnexion */
+    .hover-logout:hover {
+        background: #CE6A6B !important;
+        color: white !important;
+    }
+
+    /* 🔵 Bouton de connexion */
+    .hover-login {
+        background: #CE6A6B;
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .hover-login:hover {
+        background: #00353F !important;
+        color: white !important;
+    }
+</style>
